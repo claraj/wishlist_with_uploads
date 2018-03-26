@@ -118,6 +118,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
+# Specify a location to copy static files to when running python manage.py collectstatic
+STATIC_ROOT = os.path.join(BASE_DIR, 'www', 'static')
+
 STATIC_URL = '/static/'
 
 # Media URL, for user-created media - becomes part of URL when images are displayed

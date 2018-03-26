@@ -1,0 +1,43 @@
+
+#site-header {
+  background: url('../img/jtree.jpg') 0 0 repeat-x;
+  color: white;
+  padding: 40px 0 40px 10px;
+}
+
+span.visited-text {
+  display: inline-block;
+  width: 70%;
+}
+
+div.wishlist-place {
+  margin: 20px;
+}
+
+span.wishlist-place-name {
+  width: 70%;
+  display: inline-block;
+  word-wrap:break-word;
+}
+
+span.visited-list-place-name {
+  word-wrap:break-word;
+}
+
+label {
+  display: inline-block;
+  padding-right: 8px;
+}
+
+
+.delete {
+  background-color: #EA2713;
+}
+
+button {
+  margin: 5px 0px 5px 0;
+}
+
+.nav {
+  padding: 10px;
+}

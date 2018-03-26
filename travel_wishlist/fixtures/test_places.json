@@ -1,0 +1,38 @@
+[
+  { "model":"travel_wishlist.place",
+    "pk":1,
+    "fields":{
+      "user": 1,
+      "name":"Tokyo",
+      "visited":"True",
+      "notes":"cool",
+      "date_visited":"2014-01-01",
+      "photo":"images/tokyo.jpg"
+    }
+  },
+  { "model":"travel_wishlist.place",
+    "pk":2,
+    "fields":{
+      "user":1,
+      "name":"New York",
+      "visited":"False"
+    }
+  },
+  { "model":"travel_wishlist.place",
+    "pk":3,
+    "fields":{
+      "user":1,
+      "name":"San Francisco",
+      "visited":"False"
+    }
+  },
+
+  { "model":"travel_wishlist.place",
+    "pk":4,
+    "fields":{
+      "user":1,
+      "name":"Moab",
+      "visited":"True"
+    }
+  }
+]

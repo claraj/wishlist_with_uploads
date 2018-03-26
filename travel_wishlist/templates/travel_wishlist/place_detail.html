@@ -1,0 +1,54 @@
+{% extends 'travel_wishlist/base.html' %}
+{% load staticfiles %}
+{% block content %}
+
+{% if place.visited %}
+<h2>{{ place.name }}</h2>
+<P>You have visited {{ place.name }}</p>
+
+<h3>Notes</h3>
+<P>{{ place.notes|default:"No Notes" }}</p>
+<h3>Date Visited</h3>
+<P>{{ place.date_visited|default:"Date visited not set" }}</p>
+<h3>Photo</h3>
+{% if place.photo %}
+  <img src="{{ place.photo.url }}">
+{% else %}
+  <P>No photo uploaded</p>
+{% endif %}
+
+<!-- Messages, updates, errors from form -->
+{% if messages %}
+<div class="messages">
+  {% for message in messages %}
+    {{ message }}
+  {% endfor %}
+</div>
+{% endif %}
+
+<form action="{% url 'place_details' place_pk=place.pk %}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ review_form.as_p }}
+<button type="submit">Save review</button>
+</form>
+
+{% else %}
+  <h2>You have not visited {{ place.name }} yet.</h2>
+  <form action="{% url 'place_is_visited' %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="place_pk" value="{{ place.pk }}">
+    <button type=submit class="visited">Visited!</button>
+  </form>
+
+
+{% endif %}
+
+<form action="{% url 'delete_place' %}" method="POST">
+  {% csrf_token %}
+  <input type="hidden" name="place_pk" value="{{ place.pk }}">
+  <button type=submit class="delete">Delete</button>
+</form>
+
+<script src="{% static 'js/confirm_delete.js' %}"></script>
+
+{% endblock %}

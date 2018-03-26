@@ -1,0 +1,19 @@
+[
+    {"model" : "auth.user", "pk" : 1 , "fields" :
+      { "username" : "alice",
+        "first_name" : "alice",
+        "last_name" : "last",
+        "email" : "a@a.com",
+        "password" : "qwertyuiop"
+      }
+    },
+
+    {"model" : "auth.user", "pk" : 2 , "fields" :
+      { "username" : "bob",
+        "first_name" : "bob",
+        "last_name" : "last",
+        "email" : "b@b.com",
+        "password" : "qwertyuiop"
+      }
+    }
+]

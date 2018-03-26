@@ -1,0 +1,21 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Wishlist</title>
+  <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css" type="text/css">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+  <h1 id="site-header">Let's Go Traveling!</h1>
+
+  {% block content %}
+  {% endblock %}
+
+  <hr>
+  <span class="nav"><a href="{% url 'place_list' %}">Your Wish List</a></span> |
+  <span class="nav"><a href="{% url 'places_visited' %}">Places you've visited</a></span>
+
+</body>
+</html>

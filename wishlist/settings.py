@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+LOGIN_URL = '/admin'
 # Application definition
 
 INSTALLED_APPS = [
@@ -120,6 +120,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Media URL, for user-created media
-#
+# Media URL, for user-created media - becomes part of URL when images are displayed
 MEDIA_URL = '/media/'
+
+# Where in the file system to save user-uploaded files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

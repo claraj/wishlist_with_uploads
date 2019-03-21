@@ -16,7 +16,7 @@
 
 <div>
 
-  <form method="POST" class="visited-form" action="{% url 'place_is_visited'%}">
+  <form method="POST" class="visited-form" action="{% url 'place_was_visited'%}">
 
     <span id="place_name_{{ place.pk }}" class="wishlist-place-name"><a href="{% url 'place_details' place_pk=place.pk %}">{{ place.name }}</a></span>
 

@@ -34,7 +34,7 @@
 
 {% else %}
   <h2>You have not visited {{ place.name }} yet.</h2>
-  <form action="{% url 'place_is_visited' %}" method="POST">
+  <form action="{% url 'place_was_visited' %}" method="POST">
     {% csrf_token %}
     <input type="hidden" name="place_pk" value="{{ place.pk }}">
     <button type=submit class="visited">Visited!</button>

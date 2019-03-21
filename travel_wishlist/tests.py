@@ -143,7 +143,7 @@ class TestMarkPlaceAsVisited(TestCase):
     def test_mark_unvisited_place_as_visited(self):
 
 
-        response = self.client.post(reverse('place_is_visited'), {'place_pk': 2}, follow=True)
+        response = self.client.post(reverse('place_was_visited'), {'place_pk': 2}, follow=True)
 
 
         # Assert redirected to place list
@@ -155,7 +155,7 @@ class TestMarkPlaceAsVisited(TestCase):
 
 
     def test_mark_non_existent_place_as_visited_returns_404(self):
-        response = self.client.post(reverse('place_is_visited'), {'place_pk': 200}, follow=True)
+        response = self.client.post(reverse('place_was_visited'), {'place_pk': 200}, follow=True)
         self.assertEqual(404, response.status_code)
 
 

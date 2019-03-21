@@ -4,8 +4,6 @@ from .models import Place
 from .forms import NewPlaceForm, TripReviewForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from . import photo_manager
-import copy
 
 
 @login_required
@@ -27,17 +25,17 @@ def place_list(request):
     # with the form, and place list
     places = Place.objects.filter(visited=False)
     form = NewPlaceForm()
-    return render(request, 'travel_wishlist/wishlist.html', {'places' : places, 'form' : form})
+    return render(request, 'travel_wishlist/wishlist.html', {'places': places, 'form': form})
 
 
 @login_required
 def places_visited(request):
     visited = Place.objects.filter(user=request.user, visited=True)
-    return render(request, 'travel_wishlist/visited.html', {'visited':visited})
+    return render(request, 'travel_wishlist/visited.html', {'visited': visited})
 
 
 @login_required
-def place_is_visited(request):
+def place_was_visited(request):
     if request.method == 'POST':
         place_pk = request.POST['place_pk']
         place = get_object_or_404(Place, pk=place_pk)
@@ -61,34 +59,19 @@ def place_details(request, place_pk):
     place = get_object_or_404(Place, pk=place_pk)
 
     if request.method == 'POST':
-
-        # get a copy of the object so have a reference to the old photo,
-        # just in case it needs to be deleted; user saves new photo or clears old one.
-        old_place = get_object_or_404(Place, pk=place_pk)
-
         form = TripReviewForm(request.POST, request.FILES, instance=place)  # instance = model object to update with the form data
         if form.is_valid():
-
-            # If there was a photo added or removed, delete any old photo
-            if 'photo' in form.changed_data:
-                photo_manager.delete_photo(old_place.photo)
-
             form.save()
-
             messages.info(request, 'Trip information updated!')
-
         else:
             messages.error(request, form.errors)  # This looks hacky, replace
 
         return redirect('place_details', place_pk=place_pk)
 
-
     else:    # GET place details
-
         if place.visited:
             review_form = TripReviewForm(instance=place)  # Pre-populate with data from this Place instance
-            return render(request, 'travel_wishlist/place_detail.html', {'place':place, 'review_form':review_form } )
+            return render(request, 'travel_wishlist/place_detail.html', {'place': place, 'review_form': review_form} )
 
         else:
-
-            return render(request, 'travel_wishlist/place_detail.html', {'place':place} )
+            return render(request, 'travel_wishlist/place_detail.html', {'place': place} )

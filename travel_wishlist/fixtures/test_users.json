@@ -1,19 +1,38 @@
 [
-    {"model" : "auth.user", "pk" : 1 , "fields" :
-      { "username" : "alice",
-        "first_name" : "alice",
-        "last_name" : "last",
-        "email" : "a@a.com",
-        "password" : "qwertyuiop"
-      }
-    },
-
-    {"model" : "auth.user", "pk" : 2 , "fields" :
-      { "username" : "bob",
-        "first_name" : "bob",
-        "last_name" : "last",
-        "email" : "b@b.com",
-        "password" : "qwertyuiop"
-      }
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$120000$zNGx9iz6njLB$S/vYe1lKCcEUuRY1rtv6+bcLkXvTXHPNRn+eU9Y1agA=",
+        "last_login": "2019-03-21T14:07:04.650Z",
+        "is_superuser": true,
+        "username": "alice",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2019-03-21T03:22:46.036Z",
+        "groups": [],
+        "user_permissions": []
     }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$120000$zNGx9iz6njLB$S/vYe1lKCcEUuRY1rtv6+bcLkXvTXHPNRn+eU9Y1agA=",
+        "last_login": "2019-03-21T14:07:04.650Z",
+        "is_superuser": true,
+        "username": "bob",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2019-03-21T03:22:46.036Z",
+        "groups": [],
+        "user_permissions": []
+    }
+  }
 ]

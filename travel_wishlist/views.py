@@ -9,23 +9,28 @@ from django.contrib import messages
 @login_required
 def place_list(request):
 
-    # If a POST request, this must be from user clicking Add button
-    # in the form. Check if new place is valid and add to list, then
-    # redirect to 'place_list' route - which ends up creating a GET
-    # request for this same method.
+    """ If this is a POST request, the user clicked the Add button
+    in the form. Check if the new place is valid, if so, save a
+    new Place to the database, and redirect to this same page.
+    This creates a GET request to this same route.
+
+    If not a POST route, or Place is not valid, display a page with
+    a list of places and a form to add a new place.
+    """
+
     if request.method == 'POST':
         form = NewPlaceForm(request.POST)
         place = form.save(commit=False)
-        place.user = request.user
+        place.user = request.user  # associate the place with the current logged-in user 
         if form.is_valid():
             place.save()
             return redirect('place_list')
 
     # If not a POST request, or the form is not valid, display the page
     # with the form, and place list
-    places = Place.objects.filter(visited=False)
+    places = Place.objects.filter(visited=False).order_by('name')
     form = NewPlaceForm()
-    return render(request, 'travel_wishlist/wishlist.html', {'places': places, 'form': form})
+    return render(request, 'travel_wishlist/wishlist.html', {'places': places, 'new_place_form': form})
 
 
 @login_required
@@ -37,7 +42,7 @@ def places_visited(request):
 @login_required
 def place_was_visited(request):
     if request.method == 'POST':
-        place_pk = request.POST['place_pk']
+        place_pk = request.POST.get('pk')
         place = get_object_or_404(Place, pk=place_pk)
         place.visited = True
         place.save()

@@ -1,5 +1,6 @@
 [
-  { "model":"travel_wishlist.place",
+  { 
+    "model":"travel_wishlist.place",
     "pk":1,
     "fields":{
       "user": 1,
@@ -10,7 +11,8 @@
       "photo":"images/tokyo.jpg"
     }
   },
-  { "model":"travel_wishlist.place",
+  { 
+    "model":"travel_wishlist.place",
     "pk":2,
     "fields":{
       "user":1,
@@ -18,7 +20,8 @@
       "visited":"False"
     }
   },
-  { "model":"travel_wishlist.place",
+  { 
+    "model":"travel_wishlist.place",
     "pk":3,
     "fields":{
       "user":1,
@@ -27,7 +30,8 @@
     }
   },
 
-  { "model":"travel_wishlist.place",
+  { 
+    "model":"travel_wishlist.place",
     "pk":4,
     "fields":{
       "user":1,

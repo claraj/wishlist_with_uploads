@@ -1,3 +1,4 @@
+/* Base styles */
 
 #site-header {
   background: url('../img/jtree.jpg') 0 0 repeat-x;
@@ -5,39 +6,59 @@
   padding: 40px 0 40px 10px;
 }
 
-span.visited-text {
-  display: inline-block;
-  width: 70%;
+.nav-link {
+  margin-right: 10px;
 }
 
-div.wishlist-place {
-  margin: 20px;
-}
-
-span.wishlist-place-name {
-  width: 70%;
-  display: inline-block;
-  word-wrap:break-word;
-}
-
-span.visited-list-place-name {
-  word-wrap:break-word;
-}
+/* General form styles  */
 
 label {
   display: inline-block;
   padding-right: 8px;
 }
 
-
-.delete {
-  background-color: #EA2713;
-}
-
 button {
   margin: 5px 0px 5px 0;
 }
 
-.nav {
-  padding: 10px;
+/* Wishlist places list */
+
+div.wishlist-place {
+  margin: 20px;
 }
+
+.wishlist-place .place-name {
+  width: 70%;
+  display: inline-block;
+  word-wrap: break-word;
+}
+
+form.visited-form {
+  display: inline;
+}
+
+#add-new-place {
+  background-color: green;
+  border: darkgreen;
+}
+
+/* Visited places list */
+
+span.visited-text {
+  display: inline-block;
+  width: 70%;
+}
+
+span.visited-list-place-name {
+  word-wrap:break-word;
+}
+
+/* place details */
+
+.delete {
+  background-color: crimson;
+  border-color: darkred;
+}
+
+
+

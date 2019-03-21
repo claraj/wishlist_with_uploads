@@ -3,7 +3,9 @@
 #site-header {
   background: url('../img/jtree.jpg') 0 0 repeat-x;
   color: white;
-  padding: 40px 0 40px 10px;
+  padding: 40px 0 40px 0px;
+  text-align: center;
+
 }
 
 .nav-link {
@@ -28,13 +30,14 @@ div.wishlist-place {
 }
 
 .wishlist-place .place-name {
-  width: 70%;
+  width: 85%;
   display: inline-block;
   word-wrap: break-word;
 }
 
 form.visited-form {
-  display: inline;
+  display: inline-block;
+  width: 10%;
 }
 
 #add-new-place {

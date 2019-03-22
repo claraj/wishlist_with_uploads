@@ -29,14 +29,14 @@ def place_list(request):
 
     # If not a POST request, or the form is not valid, display the page
     # with the form, and place list
-    places = Place.objects.filter(visited=False).order_by('name')
+    places = Place.objects.filter(user=request.user).filter(visited=False).order_by('name')
     form = NewPlaceForm()
     return render(request, 'travel_wishlist/wishlist.html', {'places': places, 'new_place_form': form})
 
 
 @login_required
 def places_visited(request):
-    visited = Place.objects.filter(user=request.user, visited=True)
+    visited = Place.objects.filter(user=request.user).filter(visited=True).order_by('name')
     return render(request, 'travel_wishlist/visited.html', {'visited': visited})
 
 
@@ -70,6 +70,9 @@ def delete_place(request):
 def place_details(request, place_pk):
 
     place = get_object_or_404(Place, pk=place_pk)
+
+    if place.user != request.user:
+        return HttpResponseForbidden()
 
     if request.method == 'POST':
         form = TripReviewForm(request.POST, request.FILES, instance=place)  # instance = model object to update with the form data

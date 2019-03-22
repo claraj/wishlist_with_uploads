@@ -10,7 +10,7 @@ class TestViewHomePageIsEmptyList(TestCase):
     fixtures = ['test_users']
 
     def setUp(self):
-        user = User.objects.first()
+        user = User.objects.get(pk=1)
         self.client.force_login(user)
 
     def test_load_wishlist_page_shows_empty_list(self):
@@ -29,13 +29,10 @@ class TestWishList(TestCase):
     # Load this data into the database for all of the tests in this class
     fixtures = ['test_places', 'test_users']
 
+    
     def setUp(self):
-        self.user = User.objects.first()
-        self.client.force_login(user)
-
-
-    # TODO check only this user's places are shown 
-
+        self.user = User.objects.get(pk=1)
+        self.client.force_login(self.user)
 
     def test_view_wishlist(self):
         response = self.client.get(reverse('place_list'))
@@ -46,6 +43,9 @@ class TestWishList(TestCase):
         data_rendered = list(response.context['places'])
         # What data is in the database? Get all of the items for this user where visited = False
         data_expected = list(Place.objects.filter(user=self.user).filter(visited=False))
+
+        print('actual', data_rendered)
+        print('expected', data_expected)
 
         # Is it the same?
         self.assertCountEqual(data_rendered, data_expected)
@@ -70,12 +70,12 @@ class TestAddNewPlace(TestCase):
     fixtures = ['test_users']
 
     def setUp(self):
-        self.user = User.objects.first()
+        user = User.objects.get(pk=1)
         self.client.force_login(user)
 
     def test_add_new_unvisited_place_to_wishlist(self):
 
-        response = self.client.post(reverse('place_list'), { 'name': 'Tokyo', 'visited': False}, follow=True)
+        response = self.client.post(reverse('place_list'), { 'name': 'Tokyo', 'visited': False }, follow=True)
 
         # Check correct template was used
         self.assertTemplateUsed(response, 'travel_wishlist/wishlist.html')
@@ -95,7 +95,7 @@ class TestAddNewPlace(TestCase):
         self.assertEqual(tokyo_response, tokyo_in_database)
 
         # And add another place - still works?
-        response =  self.client.post(reverse('place_list'), { 'name': 'Yosemite', 'visited': False}, follow=True)
+        response =  self.client.post(reverse('place_list'), { 'name': 'Yosemite', 'visited': False }, follow=True)
 
         # Check correct template was used
         self.assertTemplateUsed(response, 'travel_wishlist/wishlist.html')
@@ -119,7 +119,7 @@ class TestAddNewPlace(TestCase):
 
     def test_add_new_visited_place_to_wishlist(self):
 
-        response =  self.client.post(reverse('place_list'), { 'name': 'Tokyo', 'visited': True }, follow=True)
+        response = self.client.post(reverse('place_list'), { 'name': 'Tokyo', 'visited': True }, follow=True)
 
         # Check correct template was used
         self.assertTemplateUsed(response, 'travel_wishlist/wishlist.html')
@@ -136,18 +136,17 @@ class TestAddNewPlace(TestCase):
 
 
 class TestMarkPlaceAsVisited(TestCase):
-    # Load this data into the database for all of the tests in this class
+
     fixtures = ['test_places', 'test_users']
 
     def setUp(self):
-        self.user = User.objects.first()
-        self.client.force_login(user)
+        self.user = User.objects.get(pk=1)
+        self.client.force_login(self.user)
 
 
     def test_mark_unvisited_place_as_visited(self):
 
-        response = self.client.post(reverse('place_was_visited'), {'place_pk': 2}, follow=True)
-
+        response = self.client.post(reverse('place_was_visited'), {'pk': 2}, follow=True)
         # Assert redirected to place list
         self.assertTemplateUsed(response, 'travel_wishlist/wishlist.html')
 
@@ -157,14 +156,33 @@ class TestMarkPlaceAsVisited(TestCase):
 
 
     def test_mark_non_existent_place_as_visited_returns_404(self):
-        response = self.client.post(reverse('place_was_visited'), {'place_pk': 200}, follow=True)
+        response = self.client.post(reverse('place_was_visited'), {'pk': 200}, follow=True)
         self.assertEqual(404, response.status_code)
 
 
     def test_visit_someone_else_place_not_authorized(self):
-        self.fail()
-        # TODO 
+        response = self.client.post(reverse('place_was_visited'), {'pk': 5}, follow=True)
+        self.assertEqual(403, response.status_code)  # 403 Forbidden
 
+
+class TestDeletePlace(TestCase):
+
+    fixtures = ['test_places', 'test_users']
+
+    def setUp(self):
+        user = User.objects.first()
+        self.client.force_login(user)
+
+    def delete_own_place():
+        response = self.client.post(reverse('delete', kwargs={'place_pk': 2}), follow=True)
+        place_2 = Place.objects.filter(pk=2)
+        assert place_2 is None 
+
+    def delete_someone_else_place_not_auth():
+        #response = self.client.post(reverse('delete', kwargs={'place_pk': 6}), follow=True)
+        self.assertEqual(401, response.status_code)
+        place_5 = Place.objects.filter(pk=5)
+        assert place_5 is not None 
 
 
 class TestPlaceDetail(TestCase):
@@ -172,14 +190,15 @@ class TestPlaceDetail(TestCase):
     fixtures = ['test_places', 'test_users']
 
     def setUp(self):
-        user = User.objects.first()
+        user = User.objects.get(pk=1)
         self.client.force_login(user)
 
 
-    def test_modify_someone_else_place_not_authorized(self):
-        self.fail()
-        # TODO 
-
+    def test_modify_someone_else_place_details_not_authorized(self):
+        response = self.client.post(reverse('place_details', kwargs={'place_pk':5}), {'notes':'awesome'}, follow=True)
+        print(Place.objects.filter(pk=5))
+        self.assertEqual(403, response.status_code)   # 403 Forbidden 
+        
 
     def test_place_detail(self):
 
@@ -264,4 +283,5 @@ class TestPlaceDetail(TestCase):
         assert date_visited in text_rendered
 
 
+## TODO test images
 

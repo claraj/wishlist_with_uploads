@@ -8,9 +8,10 @@ class NewPlaceForm(forms.ModelForm):
         fields = ('name', 'visited')
 
 
-# http://stackoverflow.com/questions/28213682/create-type-date-in-django-form
+# Create a custom date input field, otherwise would get a plain text field.
 class DateInput(forms.DateInput):
     input_type = 'date'  # Override the default input type, which is 'text'. 
+
 
 class TripReviewForm(forms.ModelForm):
     class Meta:
@@ -19,3 +20,5 @@ class TripReviewForm(forms.ModelForm):
         widgets = {
             'date_visited': DateInput()
         }
+
+

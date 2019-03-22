@@ -30,8 +30,11 @@ class TestWishList(TestCase):
     fixtures = ['test_places', 'test_users']
 
     def setUp(self):
-        user = User.objects.first()
+        self.user = User.objects.first()
         self.client.force_login(user)
+
+
+    # TODO check only this user's places are shown 
 
 
     def test_view_wishlist(self):
@@ -41,8 +44,9 @@ class TestWishList(TestCase):
 
         # What data was sent to the template?
         data_rendered = list(response.context['places'])
-        # What data is in the database? Get all of the items where visited = False
-        data_expected = list(Place.objects.filter(visited=False))
+        # What data is in the database? Get all of the items for this user where visited = False
+        data_expected = list(Place.objects.filter(user=self.user).filter(visited=False))
+
         # Is it the same?
         self.assertCountEqual(data_rendered, data_expected)
 
@@ -55,7 +59,7 @@ class TestWishList(TestCase):
         # What data was sent to the template?
         data_rendered = list(response.context['visited'])
         # What data is in the database? Get all of the items where visited = false
-        data_expected = list(Place.objects.filter(visited=True))
+        data_expected = list(Place.objects.filter(user=self.user).filter(visited=True))
         # Is it the same?
         self.assertCountEqual(data_rendered, data_expected)
 
@@ -66,7 +70,7 @@ class TestAddNewPlace(TestCase):
     fixtures = ['test_users']
 
     def setUp(self):
-        user = User.objects.first()
+        self.user = User.objects.first()
         self.client.force_login(user)
 
     def test_add_new_unvisited_place_to_wishlist(self):
@@ -136,15 +140,13 @@ class TestMarkPlaceAsVisited(TestCase):
     fixtures = ['test_places', 'test_users']
 
     def setUp(self):
-        user = User.objects.first()
+        self.user = User.objects.first()
         self.client.force_login(user)
 
 
     def test_mark_unvisited_place_as_visited(self):
 
-
         response = self.client.post(reverse('place_was_visited'), {'place_pk': 2}, follow=True)
-
 
         # Assert redirected to place list
         self.assertTemplateUsed(response, 'travel_wishlist/wishlist.html')
@@ -159,6 +161,12 @@ class TestMarkPlaceAsVisited(TestCase):
         self.assertEqual(404, response.status_code)
 
 
+    def test_visit_someone_else_place_not_authorized(self):
+        self.fail()
+        # TODO 
+
+
+
 class TestPlaceDetail(TestCase):
     # Load this data into the database for all of the tests in this class
     fixtures = ['test_places', 'test_users']
@@ -166,6 +174,11 @@ class TestPlaceDetail(TestCase):
     def setUp(self):
         user = User.objects.first()
         self.client.force_login(user)
+
+
+    def test_modify_someone_else_place_not_authorized(self):
+        self.fail()
+        # TODO 
 
 
     def test_place_detail(self):
@@ -249,3 +262,6 @@ class TestPlaceDetail(TestCase):
         # and correct data shown on page?
         text_rendered = str(response.content)
         assert date_visited in text_rendered
+
+
+

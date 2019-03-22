@@ -4,6 +4,7 @@ from .models import Place
 from .forms import NewPlaceForm, TripReviewForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import HttpResponseForbidden
 
 
 @login_required
@@ -42,20 +43,27 @@ def places_visited(request):
 @login_required
 def place_was_visited(request):
     if request.method == 'POST':
-        place_pk = request.POST.get('pk')
-        place = get_object_or_404(Place, pk=place_pk)
-        place.visited = True
-        place.save()
-
+        pk = request.POST.get('pk')
+        place = get_object_or_404(Place, pk=pk)
+        print(place.user, request.user)
+        if place.user == request.user:    # only let a user visit their own places
+            place.visited = True   
+            place.save()
+        else:
+            return HttpResponseForbidden()
+    
     return redirect('place_list')
 
 
 @login_required
 def delete_place(request):
-    pk = request.POST['place_pk']
+    pk = request.POST.get('pk')
     place = get_object_or_404(Place, pk=pk)
-    place.delete()
-    return redirect('place_list')
+    if place.user == request.user:
+        place.delete()
+        return redirect('place_list')
+    else:
+        return HttpResponseForbidden() 
 
 
 @login_required
@@ -69,7 +77,7 @@ def place_details(request, place_pk):
             form.save()
             messages.info(request, 'Trip information updated!')
         else:
-            messages.error(request, form.errors)  # This looks hacky, replace
+            messages.error(request, form.errors)  # Temp error message - future version should improve 
 
         return redirect('place_details', place_pk=place_pk)
 

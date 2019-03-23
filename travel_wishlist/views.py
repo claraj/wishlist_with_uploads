@@ -45,7 +45,6 @@ def place_was_visited(request):
     if request.method == 'POST':
         pk = request.POST.get('pk')
         place = get_object_or_404(Place, pk=pk)
-        print(place.user, request.user)
         if place.user == request.user:    # only let a user visit their own places
             place.visited = True   
             place.save()

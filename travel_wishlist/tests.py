@@ -304,11 +304,9 @@ class TestImageUpload(TestCase):
         handle, tmp_img_file = tempfile.mkstemp(suffix='.jpg')
         img = Image.new('RGB', (10, 10) )
         img.save(tmp_img_file, format='JPEG')
-        print('tmp img at', tmp_img_file)
         return tmp_img_file
 
 
-    @override_settings(MEDIA_ROOT='/Users/student1/tmp')
     def test_upload_new_image_for_own_place(self):
         
         img_file_path = self.create_temp_image_file()
@@ -320,7 +318,7 @@ class TestImageUpload(TestCase):
                 
                 assert resp.status_code == 200
 
-                place_1 = Place.objects.filter(pk=1).first()
+                place_1 = Place.objects.get(pk=1)
                 img_file_name = os.path.basename(img_file_path)
                 expected_uploaded_file_path = os.path.join(self.MEDIA_ROOT, 'user_images', img_file_name)
 
@@ -340,7 +338,7 @@ class TestImageUpload(TestCase):
 
                 resp = self.client.post(reverse('place_details', kwargs={'place_pk': 1} ), {'photo': first_img_file }, follow=True)
 
-                place_1 = Place.objects.filter(pk=1).first()
+                place_1 = Place.objects.get(pk=1)
 
                 first_uploaded_image = place_1.photo.name
 
@@ -350,7 +348,7 @@ class TestImageUpload(TestCase):
                     # first file should not exist 
                     # second file should exist 
 
-                    place_1 = Place.objects.filter(pk=1).first()
+                    place_1 = Place.objects.get(pk=1)
 
                     second_uploaded_image = place_1.photo.name
 
@@ -363,14 +361,37 @@ class TestImageUpload(TestCase):
 
     def test_upload_image_for_someone_else_place(self):
 
-        img_file = self.create_temp_image_file()
-        with open(img_file, 'rb') as image:
-            resp = self.client.post(reverse('place_details', kwargs={'place_pk': 5} ), {'photo': image }, follow=True)
-            assert 403, resp.status_code
+        with self.settings(MEDIA_ROOT=self.MEDIA_ROOT):
+  
+            img_file = self.create_temp_image_file()
+            with open(img_file, 'rb') as image:
+                resp = self.client.post(reverse('place_details', kwargs={'place_pk': 5} ), {'photo': image }, follow=True)
+                assert 403, resp.status_code
 
-            place_5 = Place.objects.filter(pk=5).first()
-            assert not place_5.photo
+                place_5 = Place.objects.get(pk=5)
+                assert not place_5.photo
 
 
-    # def test_delete_place_with_image_image_deleted(self):
-    #     self.fail()
+    def test_delete_place_with_image_image_deleted(self):
+        
+        img_file_path = self.create_temp_image_file()
+
+        with self.settings(MEDIA_ROOT=self.MEDIA_ROOT):
+        
+            with open(img_file_path, 'rb') as img_file:
+                resp = self.client.post(reverse('place_details', kwargs={'place_pk': 1} ), {'photo': img_file }, follow=True)
+                
+                assert resp.status_code == 200
+
+                place_1 = Place.objects.get(pk=1)
+                img_file_name = os.path.basename(img_file_path)
+                
+                uploaded_file_path = os.path.join(self.MEDIA_ROOT, 'user_images', img_file_name)
+
+                # delete place 1 
+
+                place_1 = Place.objects.get(pk=1)
+                place_1.delete()
+
+                assert not os.path.exists(uploaded_file_path)
+               

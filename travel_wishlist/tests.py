@@ -1,8 +1,15 @@
+import tempfile
+import filecmp
+import os 
+
 from django.test import TestCase
 from django.urls import reverse
+from django.test import override_settings
 
-from .models import Place
 from django.contrib.auth.models import User
+from .models import Place
+
+from PIL import Image 
 
 
 class TestViewHomePageIsEmptyList(TestCase):
@@ -43,9 +50,6 @@ class TestWishList(TestCase):
         data_rendered = list(response.context['places'])
         # What data is in the database? Get all of the items for this user where visited = False
         data_expected = list(Place.objects.filter(user=self.user).filter(visited=False))
-
-        print('actual', data_rendered)
-        print('expected', data_expected)
 
         # Is it the same?
         self.assertCountEqual(data_rendered, data_expected)
@@ -179,7 +183,7 @@ class TestDeletePlace(TestCase):
         assert place_2 is None 
 
     def delete_someone_else_place_not_auth():
-        #response = self.client.post(reverse('delete', kwargs={'place_pk': 6}), follow=True)
+        response = self.client.post(reverse('delete', kwargs={'place_pk': 6}), follow=True)
         self.assertEqual(401, response.status_code)
         place_5 = Place.objects.filter(pk=5)
         assert place_5 is not None 
@@ -196,7 +200,6 @@ class TestPlaceDetail(TestCase):
 
     def test_modify_someone_else_place_details_not_authorized(self):
         response = self.client.post(reverse('place_details', kwargs={'place_pk':5}), {'notes':'awesome'}, follow=True)
-        print(Place.objects.filter(pk=5))
         self.assertEqual(403, response.status_code)   # 403 Forbidden 
         
 
@@ -283,5 +286,57 @@ class TestPlaceDetail(TestCase):
         assert date_visited in text_rendered
 
 
-## TODO test images
+class TestImageUpload(TestCase):
 
+    fixtures = ['test_users', 'test_places']
+
+    def setUp(self):
+        user = User.objects.get(pk=1)
+        self.client.force_login(user)
+        self.MEDIA_ROOT = tempfile.mkdtemp()
+        print('Media root: ', self.MEDIA_ROOT)
+
+
+    def tearDown(self):
+        print('todo delete temp directory, temp image')
+
+
+    def create_temp_image_file(self):
+        handle, tmp_img_file = tempfile.mkstemp(suffix='.jpg')
+        img = Image.new('RGB', (10, 10) )
+        img.save(tmp_img_file, format='JPEG')
+        print('tmp img at', tmp_img_file)
+        return tmp_img_file
+
+
+    @override_settings(MEDIA_ROOT='/Users/student1/tmp')
+    def test_upload_new_image_for_own_place(self):
+        
+        img_file_path = self.create_temp_image_file()
+
+        with self.settings(MEDIA_ROOT=self.MEDIA_ROOT):
+        
+            with open(img_file_path, 'rb') as img_file:
+                resp = self.client.post(reverse('place_details', kwargs={'place_pk': 1} ), {'photo': img_file }, follow=True)
+                
+                assert resp.status_code == 200
+
+                place_1 = Place.objects.filter(pk=1).first()
+                img_file_name = os.path.basename(img_file_path)
+                expected_uploaded_file_path = os.path.join(self.MEDIA_ROOT, 'user_images', img_file_name)
+
+                assert os.path.exists(expected_uploaded_file_path)
+                assert place_1.photo
+                assert filecmp.cmp( img_file_path,  expected_uploaded_file_path )
+
+
+    def test_change_image_for_own_place_expect_old_deleted(self):
+        self.fail()
+
+
+    def test_upload_image_for_someone_else_place(self):
+        self.fail()
+
+
+    def test_delete_place_with_image_image_deleted(self):
+        self.fail()

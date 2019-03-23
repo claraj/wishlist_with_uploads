@@ -294,8 +294,7 @@ class TestImageUpload(TestCase):
         user = User.objects.get(pk=1)
         self.client.force_login(user)
         self.MEDIA_ROOT = tempfile.mkdtemp()
-        print('Media root: ', self.MEDIA_ROOT)
-
+        
 
     def tearDown(self):
         print('todo delete temp directory, temp image')
@@ -331,12 +330,47 @@ class TestImageUpload(TestCase):
 
 
     def test_change_image_for_own_place_expect_old_deleted(self):
-        self.fail()
+        
+        first_img_file_path = self.create_temp_image_file()
+        second_img_file_path = self.create_temp_image_file()
+
+        with self.settings(MEDIA_ROOT=self.MEDIA_ROOT):
+        
+            with open(first_img_file_path, 'rb') as first_img_file:
+
+                resp = self.client.post(reverse('place_details', kwargs={'place_pk': 1} ), {'photo': first_img_file }, follow=True)
+
+                place_1 = Place.objects.filter(pk=1).first()
+
+                first_uploaded_image = place_1.photo.name
+
+                with open(second_img_file_path, 'rb') as second_img_file:
+                    resp = self.client.post(reverse('place_details', kwargs={'place_pk':1}), {'photo': second_img_file}, follow=True)
+
+                    # first file should not exist 
+                    # second file should exist 
+
+                    place_1 = Place.objects.filter(pk=1).first()
+
+                    second_uploaded_image = place_1.photo.name
+
+                    first_path = os.path.join(self.MEDIA_ROOT, first_uploaded_image)
+                    second_path = os.path.join(self.MEDIA_ROOT, second_uploaded_image)
+
+                    assert not os.path.exists(first_path)
+                    assert os.path.exists(second_path)
 
 
     def test_upload_image_for_someone_else_place(self):
-        self.fail()
+
+        img_file = self.create_temp_image_file()
+        with open(img_file, 'rb') as image:
+            resp = self.client.post(reverse('place_details', kwargs={'place_pk': 5} ), {'photo': image }, follow=True)
+            assert 403, resp.status_code
+
+            place_5 = Place.objects.filter(pk=5).first()
+            assert not place_5.photo
 
 
-    def test_delete_place_with_image_image_deleted(self):
-        self.fail()
+    # def test_delete_place_with_image_image_deleted(self):
+    #     self.fail()

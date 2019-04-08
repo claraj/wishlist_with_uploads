@@ -16,7 +16,8 @@ class Place(models.Model):
         # get reference to previous version of this Place 
         old_place = Place.objects.filter(pk=self.pk).first()
         if old_place and old_place.photo:
-            self.delete_photo(old_place.photo)
+            if old_place.photo != self.photo:
+                self.delete_photo(old_place.photo)
 
         super().save(*args, **kwargs)
             

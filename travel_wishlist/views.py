@@ -41,10 +41,9 @@ def places_visited(request):
 
 
 @login_required
-def place_was_visited(request):
+def place_was_visited(request, place_pk):
     if request.method == 'POST':
-        pk = request.POST.get('pk')
-        place = get_object_or_404(Place, pk=pk)
+        place = get_object_or_404(Place, pk=place_pk)
         if place.user == request.user:    # only let a user visit their own places
             place.visited = True   
             place.save()

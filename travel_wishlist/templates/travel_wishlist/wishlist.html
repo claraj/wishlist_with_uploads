@@ -18,9 +18,8 @@
       <a href="{% url 'place_details' place_pk=place.pk %}">{{ place.name }}</a>
     </span>
 
-    <form class="visited-form" method="POST" action="{% url 'place_was_visited' %}">
+    <form class="visited-form" method="POST" action="{% url 'place_was_visited' place.pk %}">
         {% csrf_token %}
-        <input type="hidden" name="pk" value="{{ place.pk }}">
         <button id="visited-button-{{ place.pk }}" type="submit">Visited!</button>
     </form>
 

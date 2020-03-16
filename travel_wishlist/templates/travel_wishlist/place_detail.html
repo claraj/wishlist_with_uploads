@@ -21,11 +21,11 @@
 
     <!-- Messages, updates, errors from form -->
     {% if messages %}
-    <div class="messages">
-    {% for message in messages %}
-        {{ message }}
-    {% endfor %}
-    </div>
+        <div class="messages">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+        </div>
     {% endif %}
 
     <form action="{% url 'place_details' place_pk=place.pk %}" method="POST" enctype="multipart/form-data">

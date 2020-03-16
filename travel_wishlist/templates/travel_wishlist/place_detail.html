@@ -34,13 +34,12 @@
     <button type="submit">Save review</button>
     </form>
 
-
 {% else %}
+
   <p>You have not visited {{ place.name }} yet.</p>
 
-  <form action="{% url 'place_was_visited' %}" method="POST">
+  <form action="{% url 'place_was_visited' place.pk %}" method="POST">
     {% csrf_token %}
-    <input type="hidden" name="pk" value="{{ place.pk }}">
     <button type=submit class="visited">Visited!</button>
   </form>
     

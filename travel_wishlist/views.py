@@ -54,9 +54,8 @@ def place_was_visited(request, place_pk):
 
 
 @login_required
-def delete_place(request):
-    pk = request.POST.get('pk')
-    place = get_object_or_404(Place, pk=pk)
+def delete_place(request, place_pk):
+    place = get_object_or_404(Place, pk=place_pk)
     if place.user == request.user:
         place.delete()
         return redirect('place_list')

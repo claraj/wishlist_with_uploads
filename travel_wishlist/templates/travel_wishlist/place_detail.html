@@ -34,6 +34,7 @@
     <button type="submit">Save review</button>
     </form>
 
+
 {% else %}
 
   <p>You have not visited {{ place.name }} yet.</p>
@@ -45,7 +46,7 @@
     
 {% endif %}
 
-<form action="{% url 'delete_place' %}" method="POST">
+<form action="{% url 'delete_place' place.pk %}" method="POST">
     {% csrf_token %}
     <input type="hidden" name="pk" value="{{ place.pk }}">
     <button type=submit class="delete">Delete</button>

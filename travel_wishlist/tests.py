@@ -150,7 +150,7 @@ class TestMarkPlaceAsVisited(TestCase):
 
     def test_mark_unvisited_place_as_visited(self):
 
-        response = self.client.post(reverse('place_was_visited'), {'pk': 2}, follow=True)
+        response = self.client.post(reverse('place_was_visited', args=(2,)), follow=True)
         # Assert redirected to place list
         self.assertTemplateUsed(response, 'travel_wishlist/wishlist.html')
 
@@ -160,12 +160,12 @@ class TestMarkPlaceAsVisited(TestCase):
 
 
     def test_mark_non_existent_place_as_visited_returns_404(self):
-        response = self.client.post(reverse('place_was_visited'), {'pk': 200}, follow=True)
+        response = self.client.post(reverse('place_was_visited', args=(200,)), follow=True)
         self.assertEqual(404, response.status_code)
 
 
     def test_visit_someone_else_place_not_authorized(self):
-        response = self.client.post(reverse('place_was_visited'), {'pk': 5}, follow=True)
+        response = self.client.post(reverse('place_was_visited', args=(5,)), follow=True)
         self.assertEqual(403, response.status_code)  # 403 Forbidden
 
 
@@ -177,16 +177,18 @@ class TestDeletePlace(TestCase):
         user = User.objects.first()
         self.client.force_login(user)
 
-    def delete_own_place():
-        response = self.client.post(reverse('delete', kwargs={'place_pk': 2}), follow=True)
-        place_2 = Place.objects.filter(pk=2)
-        assert place_2 is None 
 
-    def delete_someone_else_place_not_auth():
-        response = self.client.post(reverse('delete', kwargs={'place_pk': 6}), follow=True)
-        self.assertEqual(401, response.status_code)
-        place_5 = Place.objects.filter(pk=5)
-        assert place_5 is not None 
+    def test_delete_own_place(self):
+        response = self.client.post(reverse('delete_place', args=(2,)), follow=True)
+        place_2 = Place.objects.filter(pk=2).first()
+        self.assertIsNone(place_2)   # place is deleted
+
+
+    def test_delete_someone_else_place_not_auth(self):
+        response = self.client.post(reverse('delete_place',  args=(5,)), follow=True)
+        self.assertEqual(403, response.status_code)
+        place_5 = Place.objects.get(pk=5)
+        self.assertIsNotNone(place_5)    # place still in database
 
 
 class TestPlaceDetail(TestCase):
@@ -204,7 +206,6 @@ class TestPlaceDetail(TestCase):
         
 
     def test_place_detail(self):
-
         place_1 = Place.objects.get(pk=1)
 
         response = self.client.get(reverse('place_details', kwargs={'place_pk':1} ))
@@ -218,11 +219,11 @@ class TestPlaceDetail(TestCase):
         self.assertEqual(data_rendered, place_1)
 
         # and correct data shown on page?
-        text_rendered = str(response.content)
-        assert 'Tokyo' in text_rendered
-        assert 'cool' in text_rendered
-        assert '2014-01-01' in text_rendered
-
+    
+        self.assertContains(response, 'Tokyo') 
+        self.assertContains(response, 'cool')  
+        self.assertContains(response, '2014-01-01') 
+            
         # TODO how to test correct image is shown?
 
 
@@ -240,10 +241,9 @@ class TestPlaceDetail(TestCase):
         self.assertTemplateUsed(response, 'travel_wishlist/place_detail.html')
 
         # and correct data shown on page?
-        text_rendered = str(response.content)
-        assert 'cool' not in text_rendered   # The old text is gone
-        assert 'awesome' in text_rendered    # new text added
-
+        self.assertNotContains(response, 'cool')  # old text is gone 
+        self.assertContains(response, 'awesome')  # new text shown
+       
 
     def test_add_notes(self):
 
@@ -260,9 +260,8 @@ class TestPlaceDetail(TestCase):
         self.assertTemplateUsed(response, 'travel_wishlist/place_detail.html')
 
         # and correct data shown on page?
-        text_rendered = str(response.content)
-        assert 'yay' in text_rendered    # new text added
-
+        self.assertContains(response, 'yay')  # new text shown
+       
 
     def test_add_date_visited(self):
 
@@ -282,8 +281,8 @@ class TestPlaceDetail(TestCase):
         self.assertTemplateUsed(response, 'travel_wishlist/place_detail.html')
 
         # and correct data shown on page?
-        text_rendered = str(response.content)
-        assert date_visited in text_rendered
+        self.assertContains(response, date_visited)  # new text shown
+       
 
 
 class TestImageUpload(TestCase):
@@ -316,15 +315,15 @@ class TestImageUpload(TestCase):
             with open(img_file_path, 'rb') as img_file:
                 resp = self.client.post(reverse('place_details', kwargs={'place_pk': 1} ), {'photo': img_file }, follow=True)
                 
-                assert resp.status_code == 200
+                self.assertEqual(200, resp.status_code)
 
                 place_1 = Place.objects.get(pk=1)
                 img_file_name = os.path.basename(img_file_path)
                 expected_uploaded_file_path = os.path.join(self.MEDIA_ROOT, 'user_images', img_file_name)
 
-                assert os.path.exists(expected_uploaded_file_path)
-                assert place_1.photo
-                assert filecmp.cmp( img_file_path,  expected_uploaded_file_path )
+                self.assertTrue(os.path.exists(expected_uploaded_file_path))
+                self.assertIsNotNone(place_1.photo)
+                self.assertTrue(filecmp.cmp( img_file_path,  expected_uploaded_file_path ))
 
 
     def test_change_image_for_own_place_expect_old_deleted(self):
@@ -355,8 +354,8 @@ class TestImageUpload(TestCase):
                     first_path = os.path.join(self.MEDIA_ROOT, first_uploaded_image)
                     second_path = os.path.join(self.MEDIA_ROOT, second_uploaded_image)
 
-                    assert not os.path.exists(first_path)
-                    assert os.path.exists(second_path)
+                    self.assertFalse(os.path.exists(first_path))
+                    self.assertTrue(os.path.exists(second_path))
 
 
     def test_upload_image_for_someone_else_place(self):
@@ -366,10 +365,10 @@ class TestImageUpload(TestCase):
             img_file = self.create_temp_image_file()
             with open(img_file, 'rb') as image:
                 resp = self.client.post(reverse('place_details', kwargs={'place_pk': 5} ), {'photo': image }, follow=True)
-                assert 403, resp.status_code
+                self.assertEqual(403, resp.status_code)
 
                 place_5 = Place.objects.get(pk=5)
-                assert not place_5.photo
+                self.assertFalse(place_5.photo)   # no photo set
 
 
     def test_delete_place_with_image_image_deleted(self):
@@ -381,7 +380,7 @@ class TestImageUpload(TestCase):
             with open(img_file_path, 'rb') as img_file:
                 resp = self.client.post(reverse('place_details', kwargs={'place_pk': 1} ), {'photo': img_file }, follow=True)
                 
-                assert resp.status_code == 200
+                self.assertEqual(200, resp.status_code)
 
                 place_1 = Place.objects.get(pk=1)
                 img_file_name = os.path.basename(img_file_path)
@@ -393,5 +392,5 @@ class TestImageUpload(TestCase):
                 place_1 = Place.objects.get(pk=1)
                 place_1.delete()
 
-                assert not os.path.exists(uploaded_file_path)
+                self.assertFalse(os.path.exists(uploaded_file_path))
                

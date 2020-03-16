@@ -21,17 +21,17 @@
 
     <!-- Messages, updates, errors from form -->
     {% if messages %}
-        <div class="messages">
+    <div class="messages">
         {% for message in messages %}
             {{ message }}
         {% endfor %}
         </div>
     {% endif %}
 
-    <form action="{% url 'place_details' place_pk=place.pk %}" method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ review_form.as_p }}
-    <button type="submit">Save review</button>
+    <form action="{% url 'place_details' place.pk %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ review_form.as_p }}
+        <button type="submit">Save review</button>
     </form>
 
 
@@ -48,7 +48,6 @@
 
 <form action="{% url 'delete_place' place.pk %}" method="POST">
     {% csrf_token %}
-    <input type="hidden" name="pk" value="{{ place.pk }}">
     <button type=submit class="delete">Delete</button>
 </form>
 

@@ -16,7 +16,7 @@ class TitleTest(LiveServerTestCase):
         self.browser = webdriver.Firefox()  # Change to .Chrome() if using Chrome
         self.browser.implicitly_wait(3)
 
-        self.browser.get(self.live_server_url)   # expect to be redirected to login page 
+        self.browser.get(self.live_server_url + '/admin')   # expect to be redirected to login page 
         self.browser.find_element_by_id('id_username').send_keys('alice')
         self.browser.find_element_by_id('id_password').send_keys('qwertyuiop')
         self.browser.find_element_by_css_selector('input[type="submit"]').click()
@@ -40,7 +40,7 @@ class AddEditPlacesTests(LiveServerTestCase):
         self.browser = webdriver.Firefox()  
         self.browser.implicitly_wait(3)
        
-        self.browser.get(self.live_server_url)   # expect to be redirected to login page 
+        self.browser.get(self.live_server_url + '/admin')   # expect to be redirected to login page 
         self.browser.find_element_by_id('id_username').send_keys('alice')
         self.browser.find_element_by_id('id_password').send_keys('qwertyuiop')
         self.browser.find_element_by_css_selector('input[type="submit"]').click()
@@ -118,7 +118,7 @@ class PageContentTests(LiveServerTestCase):
         self.browser = webdriver.Firefox()  
         self.browser.implicitly_wait(3)
         
-        self.browser.get(self.live_server_url)   # expect to be redirected to login page 
+        self.browser.get(self.live_server_url + '/admin')   # expect to be redirected to login page 
         self.browser.find_element_by_id('id_username').send_keys('alice')
         self.browser.find_element_by_id('id_password').send_keys('qwertyuiop')
         self.browser.find_element_by_css_selector('input[type="submit"]').click()
@@ -147,4 +147,3 @@ class PageContentTests(LiveServerTestCase):
         
         self.assertNotIn('San Francisco', self.browser.page_source)
         self.assertNotIn('New York', self.browser.page_source)
-

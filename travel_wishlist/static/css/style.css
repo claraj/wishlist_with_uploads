@@ -62,11 +62,15 @@ span.visited-list-place-name {
   border-color: darkred;
 }
 
-/* messages from trip report update form */
 .info {
-  color: black;
-  background-color: rgb(173, 223, 173);
-  padding: 2px;
+  background-color: rgb(156, 220, 156);
+  padding: 4px;
+}
+
+.error, .errorlist {
+  list-style-position: inside;
+  background-color: darkorange;
   font-weight: bold;
+  padding: 4px;
 }
 

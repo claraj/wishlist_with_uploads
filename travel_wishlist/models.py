@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
+from .validators import validate_date_today_or_in_past
 
 
 class Place(models.Model):
@@ -8,7 +9,7 @@ class Place(models.Model):
     name = models.CharField(max_length=200)
     visited = models.BooleanField(default=False)
     notes = models.TextField(blank=True, null=True)
-    date_visited = models.DateField(blank=True, null=True)
+    date_visited = models.DateField(blank=True, null=True, validators=[validate_date_today_or_in_past])
     photo = models.ImageField(upload_to='user_images/', blank=True, null=True)
 
 

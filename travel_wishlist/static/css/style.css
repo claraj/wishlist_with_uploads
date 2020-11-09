@@ -62,5 +62,11 @@ span.visited-list-place-name {
   border-color: darkred;
 }
 
-
+/* messages from trip report update form */
+.info {
+  color: black;
+  background-color: rgb(173, 223, 173);
+  padding: 2px;
+  font-weight: bold;
+}
 

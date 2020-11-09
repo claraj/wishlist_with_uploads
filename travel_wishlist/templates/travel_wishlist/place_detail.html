@@ -19,11 +19,13 @@
         <P>No photo uploaded</p>
     {% endif %}
 
+    <h2>Update trip report</h2>
+
     <!-- Messages, updates, errors from form -->
     {% if messages %}
     <div class="messages">
         {% for message in messages %}
-            {{ message }}
+            <p class="{{message.tags}}">{{ message }}</p>
         {% endfor %}
         </div>
     {% endif %}

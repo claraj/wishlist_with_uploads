@@ -77,8 +77,10 @@ def place_details(request, place_pk):
             form.save()
             messages.info(request, 'Trip information updated!')
         else:
-            messages.error(request, form.errors)  # Temp error message - future version should improve 
+            messages.error(request, 'Unable to update - please fix the errors listed')
+            return render(request, 'travel_wishlist/place_detail.html', {'place': place, 'review_form': form} )
 
+            
         return redirect('place_details', place_pk=place_pk)
 
     else:    # GET place details

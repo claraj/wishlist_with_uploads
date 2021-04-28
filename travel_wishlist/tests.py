@@ -295,10 +295,6 @@ class TestImageUpload(TestCase):
         self.MEDIA_ROOT = tempfile.mkdtemp()
         
 
-    def tearDown(self):
-        print('todo delete temp directory, temp image')
-
-
     def create_temp_image_file(self):
         handle, tmp_img_file = tempfile.mkstemp(suffix='.jpg')
         img = Image.new('RGB', (10, 10) )
@@ -320,7 +316,6 @@ class TestImageUpload(TestCase):
                 place_1 = Place.objects.get(pk=1)
                 img_file_name = os.path.basename(img_file_path)
                 expected_uploaded_file_path = os.path.join(self.MEDIA_ROOT, 'user_images', img_file_name)
-
                 self.assertTrue(os.path.exists(expected_uploaded_file_path))
                 self.assertIsNotNone(place_1.photo)
                 self.assertTrue(filecmp.cmp( img_file_path,  expected_uploaded_file_path ))
@@ -387,10 +382,12 @@ class TestImageUpload(TestCase):
                 
                 uploaded_file_path = os.path.join(self.MEDIA_ROOT, 'user_images', img_file_name)
 
+                self.assertTrue(os.path.exists(uploaded_file_path))  # the image is there
+               
                 # delete place 1 
 
                 place_1 = Place.objects.get(pk=1)
                 place_1.delete()
 
-                self.assertFalse(os.path.exists(uploaded_file_path))
+                self.assertFalse(os.path.exists(uploaded_file_path))  # and has been deleted 
                

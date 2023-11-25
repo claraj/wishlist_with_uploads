@@ -301,6 +301,12 @@ class TestImageUpload(TestCase):
         img.save(tmp_img_file, format='JPEG')
         return tmp_img_file
 
+    def create_temp_text_file(self):
+        handle, tmp_txt_file = tempfile.mkstemp(suffix='.txt', text=True)
+        with open(tmp_txt_file, 'w') as f:
+            f.write('this is some example text')
+        return tmp_txt_file
+
 
     def test_upload_new_image_for_own_place(self):
         

@@ -23,12 +23,12 @@ class TestViewHomePageIsEmptyList(TestCase):
     def test_load_wishlist_page_shows_empty_list(self):
         response = self.client.get(reverse('place_list'))
         self.assertTemplateUsed(response, 'travel_wishlist/wishlist.html')
-        self.assertEquals(0, len(response.context['places']))
+        self.assertEqual(0, len(response.context['places']))
 
     def test_load_visted_page_shows_empty_list(self):
         response = self.client.get(reverse('places_visited'))
         self.assertTemplateUsed(response, 'travel_wishlist/visited.html')
-        self.assertEquals(0, len(response.context['visited']))
+        self.assertEqual(0, len(response.context['visited']))
 
 
 class TestWishList(TestCase):
